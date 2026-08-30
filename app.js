@@ -39,7 +39,7 @@ function initApp(){
 (async function boot(){
   setBoot('Lade Materialzuordnungen…', 15);
   try{
-    MATERIALS = await fetchJson('data/materials.json');
+    MATERIALS = await fetchJson('materials.json');
   } catch(err){
     setBoot('Fehler beim Laden von data/materials.json: ' + err.message, 100);
     console.error(err);
@@ -49,7 +49,7 @@ function initApp(){
 
   setBoot('Lade Equipment-Daten…', 65);
   try{
-    EQUIP = await fetchJson('data/equipment.json');
+    EQUIP = await fetchJson('equipment.json');
   } catch(err){
     setBoot('Fehler beim Laden von data/equipment.json: ' + err.message, 100);
     console.error(err);
