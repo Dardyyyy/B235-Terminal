@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KA-B235 · ASPIRE Data Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="boot">
+  <div class="glyph">B2</div>
+  <div class="line" id="bootline">Verbinde mit ASPIRE Stammdaten…</div>
+  <div class="bar"><i id="bootbar"></i></div>
+</div>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="mark">B2</div>
+      <div>
+        <h1>KA-B235 Data Terminal</h1>
+        <p>ASPIRE // P30 → P1S Migration · Bau 235</p>
+      </div>
+    </div>
+    <div class="status-chip"><span class="dot"></span>ONLINE · <span id="hdr-count"></span></div>
+  </div>
+</header>
+
+<main>
+  <div class="modeswitch">
+    <div class="mode-btn active" id="btn-materials" onclick="setMode('materials')">
+      <div class="tag">MODUL 01</div>
+      <h2>Material-Finder</h2>
+      <p>Alte (P30) oder neue (P1S ASPIRE) Materialnummer eingeben — findet die Gegenseite sofort.</p>
+      <div class="count" id="mat-total-count">0</div>
+    </div>
+    <div class="mode-btn" id="btn-equip" onclick="setMode('equip')">
+      <div class="tag">MODUL 02</div>
+      <h2>Equipment &amp; Funktionsort</h2>
+      <p>Equipment-Nummer, Funktionsort oder Bezeichnung — gefiltert auf Gebäude KA-B235.</p>
+      <div class="count" id="eq-total-count">0</div>
+    </div>
+  </div>
+
+  <!-- MATERIALS PANEL -->
+  <div class="panel active" id="panel-materials">
+    <div class="search-row">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="mat-input" type="text" placeholder="z.B. 86050838 · 40000187236 · Ventil…" autocomplete="off">
+      </div>
+      <button class="clear-btn" onclick="clearMat()">Zurücksetzen</button>
+    </div>
+    <div class="meta-row">
+      <span id="mat-meta">Alle <b id="mat-meta-total">0</b> Einträge — tippe, um zu filtern</span>
+      <span id="mat-scope"></span>
+    </div>
+    <div class="results" id="mat-results"></div>
+    <div class="more-hint" id="mat-hint" style="display:none;"></div>
+  </div>
+
+  <!-- EQUIPMENT PANEL -->
+  <div class="panel" id="panel-equip">
+    <div class="search-row">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="eq-input" type="text" placeholder="z.B. TH019 · 1000415049 · Filter…" autocomplete="off">
+      </div>
+      <button class="clear-btn" onclick="clearEq()">Zurücksetzen</button>
+    </div>
+    <div class="chipbar" id="eq-chipbar"></div>
+    <div class="meta-row">
+      <span id="eq-meta">Alle <b id="eq-meta-total">0</b> Einträge in KA-B235</span>
+      <span></span>
+    </div>
+    <div class="results" id="eq-results"></div>
+    <div class="more-hint" id="eq-hint" style="display:none;"></div>
+  </div>
+
+  <footer>
+    <p>Interner Referenzstand aus PRJ-0330525 (Ersatzteile) &amp; PRJ-0330813 (Equipment), Phoenix Portal — nur zur schnellen Orientierung, verbindlich bleibt das jeweilige Quellsystem.</p>
+  </footer>
+</main>
+
+<div id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
