@@ -88,7 +88,7 @@
   main{ max-width:1180px; margin:0 auto; padding:28px 24px 80px; }
 
   .modeswitch{
-    display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:26px;
+    display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:26px;
   }
   .mode-btn{
     text-align:left; cursor:pointer; user-select:none;

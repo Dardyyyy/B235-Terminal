@@ -3,6 +3,7 @@
 // equip:     [eqnum, description, floc_suffix(no KA-B235- prefix), legacy, source]
 let MATERIALS = [];
 let EQUIP = [];
+let TPLOC = [];
 const EQUIP_PREFIX = "KA-B235-";
 
 const bootLineEl = document.getElementById('bootline');
@@ -22,12 +23,15 @@ function initApp(){
   try{
     document.getElementById('mat-total-count').textContent = MATERIALS.length.toLocaleString('de-CH');
     document.getElementById('eq-total-count').textContent = EQUIP.length.toLocaleString('de-CH');
+    document.getElementById('tploc-total-count').textContent = TPLOC.length.toLocaleString('de-CH');
     document.getElementById('mat-meta-total').textContent = MATERIALS.length.toLocaleString('de-CH');
     document.getElementById('eq-meta-total').textContent = EQUIP.length.toLocaleString('de-CH');
-    document.getElementById('hdr-count').textContent = (MATERIALS.length + EQUIP.length).toLocaleString('de-CH') + ' EINTRÄGE';
+    document.getElementById('tploc-meta-total').textContent = TPLOC.length.toLocaleString('de-CH');
+    document.getElementById('hdr-count').textContent = (MATERIALS.length + EQUIP.length + TPLOC.length).toLocaleString('de-CH') + ' EINTRÄGE';
     buildAreaChips();
     searchMaterials('');
     searchEquip('');
+    searchTploc('');
     setBoot('Bereit.', 100);
     setTimeout(()=>{ document.getElementById('boot').classList.add('hidden'); }, 280);
   } catch(err){
@@ -47,15 +51,25 @@ function initApp(){
   }
   setBoot(MATERIALS.length.toLocaleString('de-CH') + ' Materialzuordnungen geladen', 55);
 
-  setBoot('Lade Equipment-Daten…', 65);
+  setBoot('Lade Equipment-Daten…', 55);
   try{
     EQUIP = await fetchJson('equipment.json');
   } catch(err){
-    setBoot('Fehler beim Laden von data/equipment.json: ' + err.message, 100);
+    setBoot('Fehler beim Laden von equipment.json: ' + err.message, 100);
     console.error(err);
     return;
   }
-  setBoot(EQUIP.length.toLocaleString('de-CH') + ' Equipment-Datensätze KA-B235 geladen', 85);
+  setBoot(EQUIP.length.toLocaleString('de-CH') + ' Equipment-Datensätze KA-B235 geladen', 75);
+
+  setBoot('Lade Technische Plätze…', 80);
+  try{
+    TPLOC = await fetchJson('tplocations.json');
+  } catch(err){
+    setBoot('Fehler beim Laden von tplocations.json: ' + err.message, 100);
+    console.error(err);
+    return;
+  }
+  setBoot(TPLOC.length.toLocaleString('de-CH') + ' Technische Plätze KA-B235 geladen', 92);
 
   setTimeout(initApp, 180);
 })();
@@ -63,12 +77,17 @@ function initApp(){
 // ============ MODE SWITCH ============
 function setMode(mode){
   const isMat = mode === 'materials';
+  const isEq = mode === 'equip';
+  const isTploc = mode === 'tploc';
   document.getElementById('btn-materials').classList.toggle('active', isMat);
-  document.getElementById('btn-equip').classList.toggle('active', !isMat);
+  document.getElementById('btn-equip').classList.toggle('active', isEq);
+  document.getElementById('btn-tploc').classList.toggle('active', isTploc);
   document.getElementById('panel-materials').classList.toggle('active', isMat);
-  document.getElementById('panel-equip').classList.toggle('active', !isMat);
+  document.getElementById('panel-equip').classList.toggle('active', isEq);
+  document.getElementById('panel-tploc').classList.toggle('active', isTploc);
   if(isMat){ document.getElementById('mat-input').focus(); }
-  else { document.getElementById('eq-input').focus(); }
+  else if(isEq){ document.getElementById('eq-input').focus(); }
+  else if(isTploc){ document.getElementById('tploc-input').focus(); }
 }
 
 // ============ TOAST ============
@@ -274,3 +293,70 @@ eqInput.addEventListener('input', ()=>{
   eqDebounce = setTimeout(()=> searchEquip(eqInput.value), 90);
 });
 function clearEq(){ eqInput.value=''; activeAreaChip=null; document.querySelectorAll('.chip[data-area]').forEach(c=>c.classList.remove('active')); searchEquip(''); eqInput.focus(); }
+
+// ============ TECHNISCHER PLATZ SEARCH ============
+// tploc row: [oldLabel, description, newFlocSuffix (ohne "KA-B235-"), source]
+const tplocInput = document.getElementById('tploc-input');
+const tplocResults = document.getElementById('tploc-results');
+const tplocHint = document.getElementById('tploc-hint');
+const tplocMeta = document.getElementById('tploc-meta');
+const TPLOC_LIMIT = 150;
+
+function renderTplocFloc(suffix){
+  if(!suffix) return '<span class="seg">KA-B235</span>';
+  const segs = suffix.split('-');
+  return '<span class="seg" onclick="copyText(\'' + EQUIP_PREFIX + suffix + '\',\'Funktionsort\')" title="Ganzen Funktionsort kopieren">' +
+    'KA-B235</span>' + segs.map(s=>'<span class="sep">/</span><span class="seg">'+s+'</span>').join('');
+}
+
+function renderTplocRow(r){
+  const [oldLabel, desc, newSuffix, source] = r;
+  return `<div class="erow">
+    <div>
+      <div class="desc">${desc || '(keine Bezeichnung)'}</div>
+      <div class="floc">${renderTplocFloc(newSuffix)}</div>
+      ${oldLabel ? `<div class="p30" style="margin-top:7px;">Alter Techn. Platz: ${oldLabel}</div>` : ''}
+    </div>
+    <div class="right">
+      <span class="eqlbl">${source || 'QUELLE'}</span>
+    </div>
+  </div>`;
+}
+
+function searchTploc(q){
+  q = q.trim().toLowerCase();
+  if(!q){
+    tplocMeta.innerHTML = `Alle <b>${TPLOC.length.toLocaleString('de-CH')}</b> Einträge in KA-B235`;
+    const shown = TPLOC.slice(0, TPLOC_LIMIT);
+    tplocResults.innerHTML = shown.length ? shown.map(renderTplocRow).join('') :
+      `<div class="empty"><div class="big">Keine Einträge</div></div>`;
+    tplocHint.style.display = TPLOC.length > TPLOC_LIMIT ? 'block' : 'none';
+    if(TPLOC.length > TPLOC_LIMIT) tplocHint.textContent = `+ ${(TPLOC.length-TPLOC_LIMIT).toLocaleString('de-CH')} weitere — Suche eingrenzen`;
+    return;
+  }
+  const matches = TPLOC.filter(r=>{
+    return (r[0] && r[0].toLowerCase().indexOf(q) !== -1) ||
+           (r[1] && r[1].toLowerCase().indexOf(q) !== -1) ||
+           (r[2] && r[2].toLowerCase().indexOf(q) !== -1);
+  });
+  tplocMeta.innerHTML = `<b>${matches.length.toLocaleString('de-CH')}</b> Treffer für „${q}"`;
+  if(matches.length === 0){
+    tplocResults.innerHTML = `<div class="empty"><div class="big">Keine Treffer</div><div class="small">Prüfe den alten Technischen Platz, ein Funktionsort-Segment oder die Bezeichnung.</div></div>`;
+    tplocHint.style.display = 'none';
+    return;
+  }
+  const shown = matches.slice(0, TPLOC_LIMIT);
+  tplocResults.innerHTML = shown.map(renderTplocRow).join('');
+  if(matches.length > TPLOC_LIMIT){
+    tplocHint.style.display = 'block';
+    tplocHint.textContent = `+ ${(matches.length-TPLOC_LIMIT).toLocaleString('de-CH')} weitere Treffer — Suche eingrenzen`;
+  } else {
+    tplocHint.style.display = 'none';
+  }
+}
+let tplocDebounce;
+tplocInput.addEventListener('input', ()=>{
+  clearTimeout(tplocDebounce);
+  tplocDebounce = setTimeout(()=> searchTploc(tplocInput.value), 90);
+});
+function clearTploc(){ tplocInput.value=''; searchTploc(''); tplocInput.focus(); }

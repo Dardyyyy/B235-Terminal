@@ -44,6 +44,12 @@
       <p>Equipment-Nummer, Funktionsort oder Bezeichnung — gefiltert auf Gebäude KA-B235.</p>
       <div class="count" id="eq-total-count">0</div>
     </div>
+    <div class="mode-btn" id="btn-tploc" onclick="setMode('tploc')">
+      <div class="tag">MODUL 03</div>
+      <h2>Technischer Platz</h2>
+      <p>Alter Technischer Platz (P30) oder Raum/Bereich-Bezeichnung — findet den neuen Funktionsort.</p>
+      <div class="count" id="tploc-total-count">0</div>
+    </div>
   </div>
 
   <!-- MATERIALS PANEL -->
@@ -79,6 +85,23 @@
     </div>
     <div class="results" id="eq-results"></div>
     <div class="more-hint" id="eq-hint" style="display:none;"></div>
+  </div>
+
+  <!-- TECHNISCHER PLATZ PANEL -->
+  <div class="panel" id="panel-tploc">
+    <div class="search-row">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="tploc-input" type="text" placeholder="z.B. 235-EGR00YY · Erdgeschoss · MP0001…" autocomplete="off">
+      </div>
+      <button class="clear-btn" onclick="clearTploc()">Zurücksetzen</button>
+    </div>
+    <div class="meta-row">
+      <span id="tploc-meta">Alle <b id="tploc-meta-total">0</b> Einträge in KA-B235</span>
+      <span></span>
+    </div>
+    <div class="results" id="tploc-results"></div>
+    <div class="more-hint" id="tploc-hint" style="display:none;"></div>
   </div>
 
   <footer>
