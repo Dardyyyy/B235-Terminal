@@ -3,111 +3,81 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KA-B235 · ASPIRE Data Terminal</title>
+<title>KA-B235 · ASPIRE Datenterminal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="boot">
-  <div class="glyph">B2</div>
-  <div class="line" id="bootline">Verbinde mit ASPIRE Stammdaten…</div>
-  <div class="bar"><i id="bootbar"></i></div>
+  <div class="boot-frame">
+    <div class="glyph">B2</div>
+    <div class="line" id="bootline">Verbinde mit ASPIRE Stammdaten…</div>
+    <div class="bar"><i id="bootbar"></i></div>
+  </div>
 </div>
 
-<header>
-  <div class="header-inner">
-    <div class="brand">
-      <div class="mark">B2</div>
-      <div>
-        <h1>KA-B235 Data Terminal</h1>
-        <p>ASPIRE // P30 → P1S Migration · Bau 235</p>
-      </div>
-    </div>
-    <div class="status-chip"><span class="dot"></span>ONLINE · <span id="hdr-count"></span></div>
-  </div>
-</header>
+<div class="sheet">
 
-<main>
-  <div class="modeswitch">
-    <div class="mode-btn active" id="btn-materials" onclick="setMode('materials')">
-      <div class="tag">MODUL 01</div>
-      <h2>Material-Finder</h2>
-      <p>Alte (P30) oder neue (P1S ASPIRE) Materialnummer eingeben — findet die Gegenseite sofort.</p>
-      <div class="count" id="mat-total-count">0</div>
-    </div>
-    <div class="mode-btn" id="btn-equip" onclick="setMode('equip')">
-      <div class="tag">MODUL 02</div>
-      <h2>Equipment &amp; Funktionsort</h2>
-      <p>Equipment-Nummer, Funktionsort oder Bezeichnung — gefiltert auf Gebäude KA-B235.</p>
-      <div class="count" id="eq-total-count">0</div>
-    </div>
-    <div class="mode-btn" id="btn-tploc" onclick="setMode('tploc')">
-      <div class="tag">MODUL 03</div>
-      <h2>Technischer Platz</h2>
-      <p>Alter Technischer Platz (P30) oder Raum/Bereich-Bezeichnung — findet den neuen Funktionsort.</p>
-      <div class="count" id="tploc-total-count">0</div>
-    </div>
-  </div>
-
-  <!-- MATERIALS PANEL -->
-  <div class="panel active" id="panel-materials">
-    <div class="search-row">
-      <div class="search-box">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input id="mat-input" type="text" placeholder="z.B. 86050838 · 40000187236 · Ventil…" autocomplete="off">
+  <!-- TITLE BLOCK -->
+  <header class="titleblock">
+    <div class="tb-row tb-top">
+      <div class="tb-mark">KA<span>·</span>B235</div>
+      <div class="tb-doc">
+        <div class="tb-doc-title">ASPIRE Datenterminal</div>
+        <div class="tb-doc-sub">Stammdaten-Migration P30 → P1S · Bau 235</div>
       </div>
-      <button class="clear-btn" onclick="clearMat()">Zurücksetzen</button>
+      <div class="tb-status"><span class="dot"></span><span id="hdr-status">lädt…</span></div>
     </div>
-    <div class="meta-row">
-      <span id="mat-meta">Alle <b id="mat-meta-total">0</b> Einträge — tippe, um zu filtern</span>
-      <span id="mat-scope"></span>
+    <div class="tb-row tb-refs" id="tb-refs">
+      <div class="tb-ref"><span class="k">PRJ-0330525</span><span class="v">Ersatzteile</span><span class="n" id="ref-mat">–</span></div>
+      <div class="tb-ref"><span class="k">PRJ-0330813</span><span class="v">Equipment</span><span class="n" id="ref-eq">–</span></div>
+      <div class="tb-ref"><span class="k">PRJ-0330529</span><span class="v">Techn. Platz</span><span class="n" id="ref-tp">–</span></div>
     </div>
-    <div class="results" id="mat-results"></div>
-    <div class="more-hint" id="mat-hint" style="display:none;"></div>
-  </div>
+  </header>
 
-  <!-- EQUIPMENT PANEL -->
-  <div class="panel" id="panel-equip">
-    <div class="search-row">
-      <div class="search-box">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input id="eq-input" type="text" placeholder="z.B. TH019 · 1000415049 · Filter…" autocomplete="off">
+  <main>
+    <!-- UNIVERSAL SEARCH HERO -->
+    <section class="hero">
+      <div class="hero-label">Universalsuche</div>
+      <div class="search-box big">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="uni-input" type="text" placeholder="Materialnummer, Equipment-Nr., Funktionsort oder Bezeichnung…" autocomplete="off">
+        <button class="clear-btn" id="uni-clear" onclick="clearUni()" style="display:none;">✕</button>
       </div>
-      <button class="clear-btn" onclick="clearEq()">Zurücksetzen</button>
-    </div>
-    <div class="chipbar" id="eq-chipbar"></div>
-    <div class="meta-row">
-      <span id="eq-meta">Alle <b id="eq-meta-total">0</b> Einträge in KA-B235</span>
-      <span></span>
-    </div>
-    <div class="results" id="eq-results"></div>
-    <div class="more-hint" id="eq-hint" style="display:none;"></div>
-  </div>
+      <p class="hero-hint">Durchsucht alle drei Listen gleichzeitig — alte und neue Nummern, Funktionsorte und Bezeichnungen.</p>
+    </section>
 
-  <!-- TECHNISCHER PLATZ PANEL -->
-  <div class="panel" id="panel-tploc">
-    <div class="search-row">
-      <div class="search-box">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input id="tploc-input" type="text" placeholder="z.B. 235-EGR00YY · Erdgeschoss · MP0001…" autocomplete="off">
-      </div>
-      <button class="clear-btn" onclick="clearTploc()">Zurücksetzen</button>
-    </div>
-    <div class="meta-row">
-      <span id="tploc-meta">Alle <b id="tploc-meta-total">0</b> Einträge in KA-B235</span>
-      <span></span>
-    </div>
-    <div class="results" id="tploc-results"></div>
-    <div class="more-hint" id="tploc-hint" style="display:none;"></div>
-  </div>
+    <!-- CATEGORY FILTER -->
+    <nav class="catbar" id="catbar">
+      <button class="cat-chip active" data-cat="all" onclick="setCategory('all')">
+        <span class="cat-label">Alle</span><span class="cat-n" id="cat-n-all">0</span>
+      </button>
+      <button class="cat-chip" data-cat="materials" onclick="setCategory('materials')">
+        <span class="cat-swatch swatch-mat"></span><span class="cat-label">Material</span><span class="cat-n" id="cat-n-materials">0</span>
+      </button>
+      <button class="cat-chip" data-cat="equip" onclick="setCategory('equip')">
+        <span class="cat-swatch swatch-eq"></span><span class="cat-label">Equipment</span><span class="cat-n" id="cat-n-equip">0</span>
+      </button>
+      <button class="cat-chip" data-cat="tploc" onclick="setCategory('tploc')">
+        <span class="cat-swatch swatch-tp"></span><span class="cat-label">Techn. Platz</span><span class="cat-n" id="cat-n-tploc">0</span>
+      </button>
+    </nav>
+
+    <!-- EQUIPMENT AREA SUB-FILTER (only shown when category = equip) -->
+    <div class="chipbar" id="eq-chipbar" style="display:none;"></div>
+
+    <!-- RESULTS -->
+    <div id="results-root"></div>
+
+  </main>
 
   <footer>
-    <p>Interner Referenzstand aus PRJ-0330525 (Ersatzteile) &amp; PRJ-0330813 (Equipment), Phoenix Portal — nur zur schnellen Orientierung, verbindlich bleibt das jeweilige Quellsystem.</p>
+    <p>Interner Referenzstand aus PRJ-0330525, PRJ-0330813 &amp; PRJ-0330529, Phoenix Portal — nur zur schnellen Orientierung, verbindlich bleibt das jeweilige Quellsystem.</p>
   </footer>
-</main>
+</div>
 
 <div id="toast"></div>
 
