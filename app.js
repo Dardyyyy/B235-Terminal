@@ -13,7 +13,7 @@ function setBoot(msg, pct){
 }
 
 async function fetchJson(url){
-  const res = await fetch(url, { cache: 'force-cache' });
+  const res = await fetch(url, { cache: 'no-cache' });
   if (!res.ok) throw new Error('HTTP ' + res.status + ' bei ' + url);
   return res.json();
 }
